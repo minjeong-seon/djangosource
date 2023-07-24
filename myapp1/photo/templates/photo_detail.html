@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% block title %}
+<title>상세보기</title>
+{% endblock title %} {% block style %}
+<style>
+  .photo img {
+    width: 300px;
+  }
+</style>
+{% endblock style %} {% block contents %}
+<h1>{{photo.title}}</h1>
+<div class="row py-3">
+  <div class="col">
+    <a href="{% url 'photo_edit' id=photo.id %}" class="btn btn-success">Edit Photo</a>
+    <a href="{% url 'photo_delete' id=photo.id %}" class="btn btn-danger">Delete Photo</a>
+    <a href="{% url 'photo_list' %}" class="btn btn-info">List Photo</a>
+  </div>
+</div>
+<div class="row">
+  <div class="col photo">
+    <img src="{{photo.image}}" alt="{{photo.title}}" />
+    <p>사진 정보: {{photo.description}}</p>
+    <p>작성자 : {{photo.author}}, 가격 : {{photo.price}} 원</p>
+  </div>
+</div>
+{% endblock contents %}

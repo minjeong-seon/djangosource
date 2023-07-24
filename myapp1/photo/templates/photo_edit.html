@@ -1,0 +1,76 @@
+{% extends 'base.html' %}{% block title %}
+<title>수정</title>
+{% endblock title %} {% block contents %}
+<div class="row py-3">
+  <div class="col">
+    <a href="{% url 'photo_list' %}" class="btn btn-info">List Photo</a>
+  </div>
+</div>
+<div class="row pt-4">
+  <h2>Edit Photo</h2>
+</div>
+<!--사진 수정 폼-->
+<div class="row">
+  <div class="col-8 mx-auto">
+    {% if form.errors %}
+    <div class="alert alert-danger">
+      {% for field in form %} {% if field.errors %}
+      <strong>{{field.label}}</strong>
+      {{field.errors}} {% endif %} {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %} {% comment %} {{form.as_p}} {% endcomment %}
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">title</label>
+        <input
+          type="text"
+          class="form-control"
+          id="title"
+          name="title"
+          value="{{form.title.value|default_if_none:''}}"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">author</label>
+        <input
+          type="text"
+          class="form-control"
+          id="author"
+          name="author"
+          value="{{form.author.value|default_if_none:''}}"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">image</label>
+        <input
+          type="text"
+          class="form-control"
+          id="image"
+          name="image"
+          value="{{form.image.value|default_if_none:''}}"
+          readonly
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">description</label>
+        <textarea class="form-control" id="description" name="description" row="10" readonly>
+{{form.description.value|default_if_none:''}}</textarea
+        >
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">price</label>
+        <input
+          type="number"
+          class="form-control"
+          id="price"
+          name="price"
+          value="{{form.price.value|default_if_none:''}}"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">사진 수정</button>
+    </form>
+  </div>
+</div>
+{% endblock contents %}

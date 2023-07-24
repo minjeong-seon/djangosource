@@ -1,0 +1,43 @@
+{% extends 'base.html' %}{% block title %}
+<title>수정 -모델폼을 사용하지 않을 때.html</title>
+{% endblock title %} {% block contents %}
+<div class="row py-3">
+  <div class="col">
+    <a href="{% url 'photo_list' %}" class="btn btn-info">List Photo</a>
+  </div>
+</div>
+<div class="row pt-4">
+  <h2>Edit Photo</h2>
+</div>
+<!--사진 수정 폼-->
+<div class="row">
+  <div class="col-8 mx-auto">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">title</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{photo.title}}" />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">author</label>
+        <input type="text" class="form-control" id="author" name="author" value="{{photo.author}}" readonly />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">image</label>
+        <input type="text" class="form-control" id="image" name="image" value="{{photo.image}}" readonly />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">description</label>
+        <textarea class="form-control" id="description" name="description" row="10" readonly>
+{{photo.description}}</textarea
+        >
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">price</label>
+        <input type="number" class="form-control" id="price" name="price" value="{{photo.price}}" />
+      </div>
+      <button type="submit" class="btn btn-primary">사진 수정</button>
+    </form>
+  </div>
+</div>
+{% endblock contents %}

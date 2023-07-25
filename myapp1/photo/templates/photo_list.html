@@ -1,36 +1,51 @@
-{% extends 'base.html' %} {% block title %}<title>사진 목록</title>{% endblock title %} {% block style %}
-<style>
-  .photo div:nth-child(2) img {
-    width: 300px;
-  }
-</style>
-{% endblock style %} {% block contents %}
-<div class="row pb-3">
-  <div class="col">
-    <h1>Photo List</h1>
+{% extends 'base.html' %}
+{% block title %}
+  <title>사진 목록</title>
+{% endblock title %}
+{% block style %}
+  <style>
+    .photo div:nth-child(2) img {
+      width: 300px;
+    }
+  </style>
+{% endblock style %}
+{% block contents %}
+  <div class="row pb-3">
+    <div class="col">
+      <h1>Photo List</h1>
+    </div>
+    <div class="col text-center">
+      <!--하드코딩 방식: <h3><a href="/photo/new">New Photo</a></h3>-->
+      <!-- url을 직접 지정 -->
+      <h3>
+        <a href="{% url 'photo_add' %}">New Photo</a>
+      </h3>
+    </div>
   </div>
-  <div class="col text-center">
-    <!--하드코딩 방식: <h3><a href="/photo/new">New Photo</a></h3>-->
-    <!-- url을 직접 지정 -->
-    <h3><a href="{% url 'photo_add' %}">New Photo</a></h3>
-  </div>
-</div>
 
-{% if photos %}{% for photo in photos %}
+  {% if photos %}
+    {% for photo in photos %}
 
-<div class="row photo">
-  <div class="col">
-    <!--<h2><a href="/photo/{{photo.id}}">{{photo.title}}</a></h2>-->
-    <h2><a href="{% url 'photo_detail' id=photo.id %}">{{photo.title}}</a></h2>
-  </div>
-  <div class="col">
-    <img src="{{photo.image}}" alt="{{photo.title}}" />
-  </div>
-  <div class="col"><p>{{photo.author}},{{photo.price}} 원</p></div>
-</div>
+      <div class="row photo">
+        <div class="col">
+          <!--<h2><a href="/photo/{{photo.id}}">{{photo.title}}</a></h2>-->
+          <h2>
+            <a href="{% url 'photo_detail' id=photo.id %}">{{photo.title}}</a>
+          </h2>
+        </div>
+        <div class="col">
+          <img src="{{photo.image}}" alt="{{photo.title}}"/>
+        </div>
+        <div class="col">
+          <p>{{photo.author}},{{photo.price}}
+            원</p>
+        </div>
+      </div>
 
-{% endfor %} {% else %}
-<div class="row">
-  <div class="col">사진이 없습니다.</div>
-</div>
-{% endif %} {% endblock contents %}
+    {% endfor %}
+  {% else %}
+    <div class="row">
+      <div class="col">사진이 없습니다.</div>
+    </div>
+  {% endif %}
+{% endblock contents %}

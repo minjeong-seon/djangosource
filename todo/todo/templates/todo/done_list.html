@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>Done List</title>
+{% endblock title %}
+
+{% block contents %}
+  <div class="row mb-3">
+    <h1>Completed List</h1>
+  </div>
+  <div class="row my-3">
+    <div class="col-auto mr-auto">
+      <a href="{% url 'todo_list' %}" class="btn btn-success">
+        <i class="bi-plus"></i>Back to List
+      </a>
+    </div>
+  </div>
+  <table class="table">
+    <tbody>
+      {% for done in dones %}
+        <tr>
+          <th class="align-middle">
+            <a href="{% url 'todo_detail' id=done.id %}">{{done.title}}</a>
+            {% comment %} To Do List가 important=True면 ! 표시 {% endcomment %}
+            {% if done.important %}
+              <span class="badge text-bg-danger">!</span>
+            {% endif %}
+          </th>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock contents %}

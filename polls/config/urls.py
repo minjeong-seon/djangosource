@@ -19,6 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # http://127.0.0.1:8000/photo/ 로 들어오는 모든 요청은 photo 앱의 urls.py가 처리함
-    path("photo/", include("photo.urls")),
+    path("polls/", include("polls.urls")),
 ]

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>To Do Edit</title>
+{% endblock title %}
+
+{% block contents %}
+  <div class="row mb-3">
+    <h1>New List Modify</h1>
+  </div>
+  <div class="tow">
+    <div class="col-md-12">
+      <!--비어있는 폼 화면에 보여주기 : 디자인 따로 적용해야 함-->
+      {% comment %} {{form.as_p}} {% endcomment %}
+        {% include 'todo/errors.html' %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="title" class="form-label">title</label>
+          <input type="text" class="form-control" id="title" name="title" value={{form.title.value}}/>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">description</label>
+          <textarea class="form-control" id="description" name="description" row="10">{{form.description.value}}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="important" class="form-label">important</label>
+            <input type="checkbox" class="form-check-input" id="important" name="important" {% if form.important.value %}chekced{% endif %}></input>
+          </div>
+        <button type="submit" class="btn btn-primary">Modify</button>
+        <button type="button" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-info">Back To List</button>
+      </form>
+    </div>
+  </div>
+{% endblock contents %}
+{% block script %}
+<script>
+  document.querySelector(".btn-info").addEventListener("click",()=>{
+    location.href = "{% url 'todo_list' %}";
+  })
+  document.querySelector(".btn-danger").addEventListener("click",()=>{
+    const todoId = '{{ todo.id }}'; // 템플릿에서 "todo" 객체에 접근 가능한 것으로 가정합니다.
+    location.href = "{% url 'todo_delete' todo.id %}";
+  })
+</script>
+{% endblock script %}

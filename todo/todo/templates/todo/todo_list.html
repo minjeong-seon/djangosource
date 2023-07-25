@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>Todo List</title>
+{% endblock title %}
+
+{% block contents %}
+  <div class="row mb-3">
+    <h1>To Do List</h1>
+  </div>
+  <div class="row my-3">
+    <div class="col-auto mr-auto">
+      <a href="{% url 'todo_create' %}" class="btn btn-light">
+        <i class="bi-plus"></i>Add ToDo
+      </a>
+    </div>
+    <div class="col-auto">
+      <a href="{% url 'done_list' %}" class="btn btn-primary">완료한 To Do List</a>
+    </div>
+  </div>
+  <table class="table">
+    <tbody>
+      {% for todo in todos %}
+        <tr>
+          <th class="align-middle">
+            <a href="{% url 'todo_detail' id=todo.id %}">{{todo.title}}</a>
+            {% comment %} To Do List가 important=True면 ! 표시 {% endcomment %}
+            {% if todo.important %}
+              <span class="badge text-bg-danger">!</span>
+            {% endif %}
+          </th>
+          <td class="text-right">
+            <a href="{% url 'todo_done' id=todo.id %}" class="btn btn-success">완료</a>
+            <a href="{% url 'todo_edit' id=todo.id %}" class="btn btn-outline-primary">수정</a>
+            <a href="{% url 'todo_delete' id=todo.id %}" class="btn btn-danger">삭제</a>
+
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock contents %}

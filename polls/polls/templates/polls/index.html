@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block contents %}
+  <div class="card" style="width:20rem">
+    <div class="card-header">
+      <h1>Polls List</h1>
+      <small>익명투표</small>
+    </div>
+    {% if question_list %}
+      <ul class="list-group list-group-flush">
+        {% for question in question_list %}
+          <li class="list-group-item">
+            <a href="">{{question.question_text}}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>질문 목록 없음</p>
+    {% endif %}
+  </div>
+{% endblock contents %}

@@ -7,6 +7,7 @@
 <!--사진 등록 폼-->
 <div class="row">
   <div class="col-8 mx-auto">
+    <!--모델폼 사용할 때 : 에러 발생 시 서버에 안내 -->
     {% if form.errors %}
     <div class="alert alert-danger">
       {% for field in form %} {% if field.errors %}

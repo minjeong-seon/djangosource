@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Question
 
 
@@ -11,7 +11,10 @@ def index(request):
 
 
 def detail(request, question_id):
-    pass
+    # question_id를 이용해 선택사항 가져오기
+    # Question과 관련된 Choice는 알아서 따라감
+    question = get_object_or_404(Question, id=question_id)
+    return render(request, "polls/detail.html", {"question": question})
 
 
 def results(request, question_id):

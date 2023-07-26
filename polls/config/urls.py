@@ -16,8 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from polls.views import index
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("polls/", include("polls.urls")),
+    # http://127.0.0.1:8000/ --요청 처리
+    path("", index),
 ]

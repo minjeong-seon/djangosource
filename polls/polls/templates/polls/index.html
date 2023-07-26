@@ -9,7 +9,7 @@
       <ul class="list-group list-group-flush">
         {% for question in question_list %}
           <li class="list-group-item">
-            <a href="">{{question.question_text}}</a>
+            <a href="{% url 'detail' question_id=question.id %}" class="text-decoration-none">{{question.question_text}}</a>
           </li>
         {% endfor %}
       </ul>

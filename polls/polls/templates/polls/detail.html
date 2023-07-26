@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block contents %}
-  <form action="" method="post">
+  <form action="{% url 'vote' question.id %}" method="post">
     {% csrf_token %}
     <fieldset class="form-group border p-3">
       <legend class="w-auto px-2">

@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Question, Choice
 
+# admin 페이지 커스터마이징 하기
+
 
 class ChoiceInline(admin.StackedInline):
     model = Choice
@@ -15,6 +17,8 @@ class QuestionAdmin(admin.ModelAdmin):
         ("Date information", {"fields": ["pub_date"]}),
     ]
     inlines = [ChoiceInline]
+    # admin 페이지에서 질문목록 볼 때 날자 띄우기
+    list_display = ("question_text", "pub_date")
 
 
 admin.site.register(Question, QuestionAdmin)

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block contents %}
+  <form action="" method="post">
+    {% csrf_token %}
+    <fieldset class="form-group border p-3">
+      <legend class="w-auto px-2">
+        <h3>{{question.question_text}}</h3>
+      </legend>
+      <p>
+        <strong></strong>
+      </p>
+      {% for choice in question.choice_set.all %}
+        <div>
+          <input type="radio" name="choice" id="choice{{forloop.counter}}" value="{{choice.id}}">
+          <label for="choice{{forloop.counter}}">{{choice.choice_text}}</label>
+        </div>
+      {% endfor %}
+    </fieldset>
+    <button type="submit" class="btn btn-info">Vote</button>
+  </form>
+{% endblock contents %}

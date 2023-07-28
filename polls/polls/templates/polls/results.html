@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block contents %}
+  <div class="card" style="width:50rem">
+    <div class="card-header">
+      <h1>{{question.question_text}}</h1>
+      <small>익명투표 결과</small>
+    </div>
+    <ul class="list-group list-group-flush">
+      {% for choice in question.choice_set.all %}
+        <li class="list-group-item">{{choice.choice_text}}
+          --
+          {{choice.vote}}
+          vote{{choice.vote|pluralize}}
+        </li>
+      {% endfor %}
+    </ul>
+    <a href="" class="btn btn-outline-success">Vote again?</a>
+  </div>
+{% endblock contents %}
+<!-- |pluralize : django에서 제공하는 템플릿 필터 ==> vote 칼럼의 값이 단/복수냐에 따라 vote 뒤에 s를 붙여줌 -->

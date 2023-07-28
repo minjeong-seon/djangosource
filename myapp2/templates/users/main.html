@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block contents %}
+  <h1 class="pt-3">User Main</h1>
+  <ul>
+    <li>
+      {% if user.is_authenticated %}
+        <!--로그인 성공 시-->
+        <a href="{% url 'users:logout' %}">
+          {{user.username}}
+          logout</a>
+      {% else %}
+        <!--유저 정보가 없을 때-->
+        <a href="{% url 'users:login' %}">login</a>
+      {% endif %}
+    </li>
+    <li>
+      <a href="{% url 'users:register' %}">register</a>
+    </li>
+    <li>
+      <a href="{% url 'users:password_change' %}">Password Change</a>
+    </li>
+  </ul>
+{% endblock contents %}

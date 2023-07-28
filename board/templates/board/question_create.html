@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block contents %}
+  <h5 class="my-3 border-bottom pb-2">질문 등록</h5>
+  <!-- views.py에서 is_valid() 통과 못할 시 -->
+  {% include 'errors.html' %}
+  <form method="post" class="my-3">
+    {% csrf_token %}
+    <div class="form-group mb-3">
+      <label for="subject">제목</label>
+      <input type="text" name="subject" id="subject" class="form-control" value="{{form.subject.value|default_if_none:''}}">
+
+    </div>
+    <div class="form-group mb-3">
+      <label for="content">내용</label>
+      <textarea class="form-control" name="content" id="content" rows="10">{{form.content.value|default_if_none:''}}</textarea>
+    </div>
+    <input type="submit" value="질문 등록" class="btn btn-success">
+  </form>
+{% endblock contents %}

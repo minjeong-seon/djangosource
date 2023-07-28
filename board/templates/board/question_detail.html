@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+  <h2 class="border-bottom py-2">
+    <!-- 질문제목-->
+    {{question.subject}}
+  </h2>
+  <!-- 추천 영역-->
+  <div class="row my-3">
+    <div class="col-1">
+      <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+        <!--추천수-->
+      </div>
+      <a href="" class="recommand btn btn-sm btn-secondary btn-block my-1">추천</a>
+    </div>
+    <div class="col-11">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-text">
+            <!--질문내용-->
+            {{question.content}}
+          </div>
+          <div class="d-flex justify-content-end">
+            <div class="bg bg-light p-2 text-start">
+              <!--작성자-->
+              <div class="mb-2">작성자:
+                {{question.author}}</div>
+              <!--질문작성날짜-->
+              {{question.regdate}}
+            </div>
+          </div>
+          <!--수정 날짜-->
+          {% if not question.updatedate != "None" %}
+            <div class="d-flex justify-content-end">
+              <div class="bg bg-light p-2 text-start">
+                <div class="mb-2">질문 수정 날짜:
+                </div>
+                <!--질문수정날짜-->
+                {{question.updatedate}}
+              </div>
+            </div>
+          {% endif %}
+          <!--// 수정 날짜 종료-->
+          <!-- 로그인 사용자 == 작성자일 때만 수정/삭제 버튼 활성화 -->
+
+          {% if request.user == question.author %}
+            <div class="my-3">
+              <a href="{% url 'board:question_edit' question.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
+              <a href="{% url 'board:question_delete' question.id %}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
+            </div>
+          {% endif %}
+          <!-- 질문 댓글 영역-->
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- [Answer 영역] # Question과 answer 외래키 제약조건 상태 # question.answer_set # question.answer_set.count : question 달린 댓글 수 # question.answer_set.all : question 달린 댓글 전체 -->
+
+  <h5 class="border-bottom py-2 my-3">
+    <!-- 답변 개수-->
+    {{question.answer_set.count}}
+    개의 답변이 있습니다.
+  </h5>
+  <a name=""></a>
+  {% for answer in question.answer_set.all %}
+    <!-- 추천 영역-->
+    <div class="row my-3">
+      <div class="col-1">
+        <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+          <!--추천수-->
+        </div>
+        <a href="" class="recommand btn btn-sm btn-secondary btn-block my-1">추천</a>
+      </div>
+      <div class="col-11">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-text">
+              <!--답변내용-->
+              {{answer.content}}
+            </div>
+            <div class="d-flex justify-content-end">
+              <div class="bg bg-light p-2 text-start">
+                <!--답변 작성자-->
+                <div class="mb-2">작성자:
+                  {{answer.author}}</div>
+                <!--답변작성날짜-->
+                {{answer.regdate}}
+              </div>
+            </div>
+            <!--답변 수정 날짜-->
+            <div class="d-flex justify-content-end">
+              <div class="bg bg-light p-2 text-start">
+                <div class="mb-2">답변 수정 날짜:
+                </div>
+                <!--답변수정날짜-->
+                {{answer.updatedate}}
+              </div>
+            </div>
+            <!--// 답변 날짜 종료-->
+            {% if request.user == answer.author %}
+              <div class="my-3">
+                <a href="{% url 'board:answer_edit' answer.id question.id%}" class="btn btn-sm btn-outline-secondary">수정</a>
+                <a href="{% url 'board:answer_delete' answer.id %}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
+              </div>
+            {% endif %}
+            <!-- 답변 댓글 영역-->
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  <div>
+
+    <a href="{% url 'board:index' %}" class="btn btn-sm btn-primary">목록으로</a>
+  </div>
+  <form action="{% url 'board:answer_create' question.id %}" method="post" class="my-3">
+    {% include 'errors.html' %}
+    {% csrf_token %}
+    <div class="form-group mb-3">
+      <textarea class="form-control" name="content" id="content" rows="10"></textarea>
+    </div>
+    <input type="submit" value="답변등록" class="btn btn-success" {% if not user.is_authenticated %} disabled="disabled" {% endif %}>
+  </form>
+{% endblock contents %}
+{% block script %}
+  <script src="{% static 'js/detail.js' %}"></script>
+{% endblock script %}

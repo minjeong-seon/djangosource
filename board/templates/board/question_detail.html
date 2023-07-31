@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
+{% block style %}
+  <style>
+    .comment {
+      boarder-top: dotted 1px #ddd;
+      font-sixe: 0.7em;
+    }
+  </style>
+{% endblock style %}
 {% block contents %}
   <h2 class="border-bottom py-2">
     <!-- 질문제목-->
@@ -7,12 +16,26 @@
   </h2>
   <!-- 추천 영역-->
   <div class="row my-3">
+    {% if messages %}
+      <div class="alert alert-danger my-3">
+        {% for msg in messages %}
+          <strong>{{msg.tags}}</strong>
+          <ul>
+            <li>{{msg.message}}</li>
+          </ul>
+        {% endfor %}
+      </div>
+    {% endif %}
     <div class="col-1">
       <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
         <!--추천수-->
+        {{question.voter.count}}
       </div>
-      <a href="" class="recommand btn btn-sm btn-secondary btn-block my-1">추천</a>
+      <div class="d-grid d-block">
+        <a href="{% url 'board:vote_question' question.id %}" class="recommand btn btn-sm btn-secondary">추천</a>
+      </div>
     </div>
+
     <div class="col-11">
       <div class="card">
         <div class="card-body">
@@ -26,7 +49,7 @@
               <div class="mb-2">작성자:
                 {{question.author}}</div>
               <!--질문작성날짜-->
-              {{question.regdate}}
+              {{question.regdate|date}}
             </div>
           </div>
           <!--수정 날짜-->
@@ -50,8 +73,35 @@
             </div>
           {% endif %}
           <!-- 질문 댓글 영역-->
+          {% if question.comment_set.count > 0 %}
+            <div class="mt-3">
+              {% for comment in question.comment_set.all %}
+                <a name="comment_{{comment.id}}"></a>
+                <div class="comment py-2 text-muted">
+                  <span style="white-space:pre-line">{{comment.content}}</span>
+                  <span>
+                    <!--댓글 작성자 / 작성일시 / 수정일시-->
+                    - 작성자:
+                    {{comment.author}}
+                    |
+                    {{comment.regdate|date}}
+                    {% if comment.updatedate %}
+                      수정 날짜:
+                      {{comment.updatedate|naturaltime}}
+                    {% endif %}
+                  </span>
+                  {% if request.user == comment.author %}
+                    <a href="{% url 'board:comment_edit_q' comment.id %}" class="small">수정</a>
+                    <a href="{% url 'board:comment_delete_q' comment.id %}" class="small delete">삭제</a>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
-
+        <div class="mx-3">
+          <a href="{% url 'board:comment_create_q' question.id %}" class="small">댓글추가....</a>
+        </div>
       </div>
     </div>
   </div>
@@ -63,15 +113,18 @@
     {{question.answer_set.count}}
     개의 답변이 있습니다.
   </h5>
-  <a name=""></a>
+  <a name="answer_{{answer.id}}"></a>
   {% for answer in question.answer_set.all %}
     <!-- 추천 영역-->
     <div class="row my-3">
       <div class="col-1">
         <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
-          <!--추천수-->
+          <!--추천수: select count(*) from board_question_voter where question_id = 몇몇-->
+          {{answer.voter.count}}
         </div>
-        <a href="" class="recommand btn btn-sm btn-secondary btn-block my-1">추천</a>
+        <div class="d-grid d-block">
+          <a href="{% url 'board:vote_answer' answer.id %}" class="recommand btn btn-sm btn-secondary">추천</a>
+        </div>
       </div>
       <div class="col-11">
         <div class="card">
@@ -90,14 +143,16 @@
               </div>
             </div>
             <!--답변 수정 날짜-->
-            <div class="d-flex justify-content-end">
-              <div class="bg bg-light p-2 text-start">
-                <div class="mb-2">답변 수정 날짜:
+            {% if not answer.updatedate != "None" %}
+              <div class="d-flex justify-content-end">
+                <div class="bg bg-light p-2 text-start">
+                  <div class="mb-2">답변 수정 날짜:
+                  </div>
+                  <!--답변수정날짜-->
+                  {{answer.updatedate}}
                 </div>
-                <!--답변수정날짜-->
-                {{answer.updatedate}}
               </div>
-            </div>
+            {% endif %}
             <!--// 답변 날짜 종료-->
             {% if request.user == answer.author %}
               <div class="my-3">
@@ -106,15 +161,38 @@
               </div>
             {% endif %}
             <!-- 답변 댓글 영역-->
-
+            {% if answer.comment_set.count > 0 %}
+              <div class="mt-3">
+                {% for comment in answer.comment_set.all %}
+                  <a name="comment_{{comment.id}}"></a>
+                  <div class="comment py-2 text-muted">
+                    <span style="white-space:pre-line">{{comment.content}}</span>
+                    <span>
+                      <!--댓글 작성자 / 작성일시 / 수정일시-->
+                      - 작성자:
+                      {{comment.author}}
+                      |
+                      {{comment.regdate}}
+                      {% if comment.updatedate %}
+                        수정 날짜:
+                        {{comment.updatedate|naturaltime}}
+                      {% endif %}
+                    </span>
+                    <a href="{% url 'board:comment_edit_a' comment.id %}" class="small">수정</a>
+                    <a href="{% url 'board:comment_delete_a' comment.id %}" class="small delete">삭제</a>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
           </div>
-
+          <div class="mx-3">
+            <a href="{% url 'board:comment_create_a' answer.id %}" class="small">댓글추가....</a>
+          </div>
         </div>
       </div>
     </div>
   {% endfor %}
   <div>
-
     <a href="{% url 'board:index' %}" class="btn btn-sm btn-primary">목록으로</a>
   </div>
   <form action="{% url 'board:answer_create' question.id %}" method="post" class="my-3">

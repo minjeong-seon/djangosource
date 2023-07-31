@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Answer
+from .models import Question, Answer, Comment
 
 # Register your models here.
 
@@ -13,3 +13,4 @@ class QuestionAdmin(admin.ModelAdmin):
 # register(상속받은 클래스, <-를 관리할 admin(커스텀)클래스)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer)
+admin.site.register(Comment)

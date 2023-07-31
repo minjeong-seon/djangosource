@@ -14,3 +14,15 @@ deleteAll.forEach((item) => {
     }
   });
 });
+
+// 추천기능(태그 클릭 시 확인 후 컨펌 기능 수행)
+const recommand = document.querySelectorAll(".recommand");
+recommand.forEach((item) => {
+  item.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (confirm("추천하시겠습니까?")) {
+      location.href = e.target.href;
+    }
+  });
+});

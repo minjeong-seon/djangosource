@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+  <h2 class="border-bottom py-2">
+    <!-- 질문제목-->
+    {{question.subject}}
+  </h2>
+  <!-- 추천 영역-->
+  <div class="row my-3">
+    <div class="col-1">
+      <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+        <!--추천수-->
+      </div>
+      <a href="" class="recommand btn btn-sm btn-secondary btn-block my-1">추천</a>
+    </div>
+    <div class="col-11">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-text">
+            <!--질문내용-->
+            {{question.content}}
+          </div>
+          <div class="d-flex justify-content-end">
+            <div class="bg bg-light p-2 text-start">
+              <!--작성자-->
+              <div class="mb-2">{{question.author}}</div>
+              <!--질문작성날짜-->
+              {{question.regdate}}
+            </div>
+          </div>
+          <!--수정 날짜-->
+          <div class="d-flex justify-content-end">
+            <div class="bg bg-light p-2 text-start">
+              <div class="mb-2">수정 날짜</div>
+              <!--질문수정날짜-->
+              {{question.updatedate}}
+            </div>
+          </div>
+          <!--// 수정 날짜 종료-->
+          <!-- 로그인 사용자 == 작성자일 때만 수정/삭제 버튼 활성화 -->
+          {% if request.user == question.author %}
+            <div class="my-3">
+              <div class="my-3">
+                <a href="{% url 'board:answer_edit' answer.id question.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
+                <a href="{% url 'board:question_delete' question.id %}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
+              </div>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <form method="post" class="my-3">
+      {% csrf_token %}
+      <div class="form-group mb-3">
+        <label for="content">내용</label>
+        {% include 'errors.html' %}
+        <textarea class="form-control" name="content" id="content" rows="10">{{form.content.value|default_if_none:''}}</textarea>
+      </div>
+      <input type="submit" value="댓글 작성" class="btn btn-success">
+    </form>
+    <a href="{% url 'board:index' %}" class="btn btn-sm btn-primary">목록으로</a>
+  </div>
+
+{% endblock contents %}
+{% block script %}
+  <script src="{% static 'js/detail.js' %}"></script>
+{% endblock script %}

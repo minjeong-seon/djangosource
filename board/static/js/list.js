@@ -9,3 +9,22 @@ document.querySelector(".pagination").addEventListener("click", (e) => {
   document.querySelector("#page").value = href;
   document.querySelector("#actionForm").submit();
 });
+
+// 검색창
+// 찾기 버튼 클릭 시
+// 검색어 입력여부 확인(없으면 alert창 띄우기)+focus
+// 검색어 있으면 하단 actionForm 안 keyword value 값에 검색어 삽입
+document.querySelector("#btn_search").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const search_bar = document.querySelector("#top_keyword");
+
+  if (search_bar.value == "") {
+    alert("검색어를 입력해 주세요.");
+    search_bar.focus();
+    return;
+  }
+
+  document.querySelector("#keyword").value = search_bar.value;
+  document.querySelector("#actionForm").submit();
+});

@@ -26,3 +26,9 @@ recommand.forEach((item) => {
     }
   });
 });
+
+// 목록으로 버튼 클릭 시 actionForm 전송
+document.querySelector(".return_list").addEventListener("click", (e) => {
+  e.preventDefault();
+  document.querySelector("#actionForm").submit();
+});

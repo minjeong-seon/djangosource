@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/clean-blog.min.css' %}">
+{% endblock style %}
+{% block contents %}
+  <div class="row mt-3">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <a href="{% url 'blog:post_create' %} " class="btn btn-primary">글 작성</a>
+    </div>
+  </div>
+  {% for post in posts %}
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <div class="post-preview">
+        <a href="{% url 'blog:post_detail' post.id %}">
+          <h3 class="post-title">
+            <!-- 제목 -->
+            {{post.subject}}
+          </h3>
+          <h4 class="post-subtitle">
+            {{post.content|truncatechars:8}}
+          </h4>
+        </a>
+        <p class="post-meta">
+          Posted by<span>
+            <!-- 작성자 -->
+            {{post.author}}
+          </span>
+          <!-- 작성날짜 -->
+          {{post.regdate}}
+        </p>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock contents %}

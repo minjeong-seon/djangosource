@@ -41,7 +41,7 @@ def answer_create(request, qid):
             # detail 앵커 이용(a태그 name="answer_{}")
             # resolve_url(패턴이름, 위치) : url로 변환
             return redirect(
-                "{}#answer_{}".format(resolve_url("board:detail", qid=qid)), answer.id
+                "{}#answer_{}".format(resolve_url("board:detail", qid=qid), answer.id)
             )
 
     else:

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "board",
     "users",
     "django.contrib.humanize",
+    "blogs",
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,7 @@ LOGIN_REDIRECT_URL = "/"
 
 # LOGOUT 성공 후 이동할 경로 지정
 LOGOUT_REDIRECT_URL = "/"
+
+# media 파일 저장 디렉토리
+MEDIA_ROOT = Path(BASE_DIR, "media")
+MEDIA_URL = "/media/"

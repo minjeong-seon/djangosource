@@ -193,7 +193,7 @@
     </div>
   {% endfor %}
   <div>
-    <a href="{% url 'board:index' %}" class="btn btn-sm btn-primary">목록으로</a>
+    <a href="{% url 'board:index' %}" class="btn btn-sm btn-primary return_list">목록으로</a>
   </div>
   <form action="{% url 'board:answer_create' question.id %}" method="post" class="my-3">
     {% include 'errors.html' %}
@@ -203,6 +203,14 @@
     </div>
     <input type="submit" value="답변등록" class="btn btn-success" {% if not user.is_authenticated %} disabled="disabled" {% endif %}>
   </form>
+
+  <!-- 페이지 번호 클릭 / 검색 / 정렬 시 이동할 폼 -->
+  <form action="{% url 'board:index' %}" method="get" id="actionForm">
+    <input type="hidden" name="keyword" value="{{keyword|default_if_none:''}}" id="keyword">
+    <input type="hidden" name="page" value="{{page}}" id="page">
+    <input type="hidden" name="sort" value="{{sort}}" id="sort">
+  </form>
+
 {% endblock contents %}
 {% block script %}
   <script src="{% static 'js/detail.js' %}"></script>

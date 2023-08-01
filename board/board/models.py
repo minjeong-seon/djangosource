@@ -20,6 +20,8 @@ class Question(models.Model):
 
     # 추천 필드
     voter = models.ManyToManyField(User, related_name="voter_question")
+    # 조회수
+    view_count = models.BigIntegerField(default=0)
 
     # Question 모델 객체를 문자열로 표현할 때 --> 해당 객체의 subject 필드 값을 반환
     # 관리자페이지에서 테이블 편하게 보려고 작성(안 하면 주소값 나옴)
@@ -56,3 +58,16 @@ class Comment(models.Model):
         Question, on_delete=models.CASCADE, null=True, blank=True
     )
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, null=True, blank=True)
+
+
+class QuestionCount(models.Model):
+    """
+    조회수 업데이트를 위한 모델
+    사용자의 ip 저장
+    """
+
+    ip = models.CharField(max_length=30)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.ip

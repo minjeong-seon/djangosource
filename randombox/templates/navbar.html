@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand hover-menu" href="{% url 'main' %}">MyApp</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link active" aria-current="page" href="{% url 'main' %}">Home</a>
+        <a class="nav-link hover-menu" aria-current="page" href="{% url 'qna:index' %}">QnA</a>
+        {% if not user.is_authenticated %}
+          <a class="nav-link hover-menu" href="{% url 'users:login' %}">로그인</a>
+          <a class="nav-link hover-menu" href="{% url 'users:register' %}">회원가입</a>
+        {% else %}
+          <a class="nav-link hover-menu" href="{% url 'users:logout' %}">{{user.username}}님 로그아웃</a>
+          <a class="nav-link hover-menu" href="{% url 'users:password_change' %}">비밀번호 변경</a>
+          <!-- 관리자 계정 로그인 시에만 메뉴 활성화 -->
+          {% if user.id == 1 %}
+            <a class="nav-link hover-menu" href="{% url 'master' %}">관리</a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

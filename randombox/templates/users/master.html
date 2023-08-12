@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load qna_filter %}
+{% load static %}
+{% load humanize %}
+{% block contents %}
+
+  <div class="page-title">
+    <h3>Administrator Monitoring</h3>
+    <p class="text-subtitle text-muted">이벤트 / 게시판 관리</p>
+    <p class="text-subtitle text-muted">{{test}}</p>
+
+  </div>
+
+  <!-- 상단 판매현황 박스 -->
+  <div class="container text-center ">
+    <div class="row ">
+      <div class="col">
+        <div class="card" style="height: 180px;background: #f3f3f3;">
+          <div class="card-body">
+            <h5 class="card-title fw-bold">랜덤박스 재고 수량</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">일반상품:
+              <span class="text-blue">{{g_stock|intcomma}}</span>
+              개</h6>
+            <h6 class="mb-2 text-body-secondary">명품상품:
+              <span class="text-blue">{{b_stock}}</span>
+              개</h6>
+            <a href="#" class="card-link btn btn-primary">제품별 재고 수량</a>
+          </div>
+        </div>
+      </div>
+      <div class="col order-5">
+        <div class="col">
+          <div class="card" style="height: 180px;background: #f3f3f3;">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <h5 class="card-title fw-bold">답변 대기중인 질문 개수</h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">
+                <span class="text-blue">{{wq_count}}</span>개</h6>
+              <div class="mt-auto">
+                <a href="#" class="card-link btn btn-primary">QnA 게시판</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col order-1">
+        <div class="col">
+          <div class="card" style="height: 180px;background: #f3f3f3;">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <h5 class="card-title fw-bold">랜덤박스 총 매출액</h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">
+                <span class="text-blue">{{total_sales|intcomma}}</span>원</h6>
+              <h6 class="mb-2 text-body-secondary">
+                {% if total_sales == 0 or remain_sales < min_brand_price or total_sales == remain_sales %}
+                  <span class="text-red">브랜드 상품 출고 대기</span>
+                {% else %}Balance:
+                  <span class="text-blue">{{remain|intcomma}}</span>원
+                {% endif %}
+              </h6>
+              <div class="mt-auto">
+                <a href="#" class="card-link btn btn-primary">구매자 현황</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 상단 판매현황 박스 종료-->
+
+  <p class="space text-center fs-3">미답변 질문 목록</p>
+
+  <!-- 미답변 질문 목록 -->
+  <table class="table">
+    <thead>
+      <tr class="table-success">
+        <th scope="col" class="text-center">번호</th>
+        <th scope="col" class="text-center">제목</th>
+        <th scope="col" class="text-center">작성자</th>
+        <th scope="col" class="text-center">작성일시</th>
+        <th scope="col" class="text-center"></th>
+      </tr>
+    </thead>
+    <!-- 게시판 질문 리스트 -->
+    <tbody>
+      {% if waiting_question %}
+        {% for question in waiting_question %}
+          <tr>
+            <th scope="row" class="text-center">
+              <!-- 게시글 번호 -->
+              {{question.id}}
+            </th>
+            <td class="text-center ">
+              <!-- 게시글 제목 -->
+              {{question.title}}
+            </td>
+            <td class="text-center">
+              <!-- 게시글 작성자 -->
+              {{question.author}}
+            </td>
+            <td class="text-center">
+              <!-- 게시글 작성일시 -->
+              {{question.regdate}}
+
+            </td>
+            <td class="text-center">
+              <a href="{% url 'qna:detail' question.id %}" class="btn btn-outline-primary">답변하기</a>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="3">미답변 질문이 없습니다.</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+  <!-- 미답변 질문 목록 종료-->
+
+  <!-- 페이징 처리 -->
+  <!-- 페이징 처리 -->
+  <nav aria-label="">
+    <ul class="pagination justify-content-center">
+      {% if waiting_question.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ waiting_question.previous_page_number }}">Previous</a>
+        </li>
+      {% endif %}
+
+      {% for page in waiting_question.paginator.page_range %}
+
+        <li class="page-item  {% if page == waiting_question.number %}active{% endif %}">
+          <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+        </li>
+
+      {% endfor %}
+
+      {% if waiting_question.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ waiting_question.next_page_number }}">Next</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  <!-- 페이징 처리 종료 -->
+
+  <!-- 페이징 처리 종료 -->
+
+  <!--페이지 번호 클릭 / 정렬 시 이동할 폼-->
+  <form action="#" method="get" id="actionForm">
+    <input type="hidden" name="page" value="{{page}}" id="page">
+    <input type="hidden" name="sort" value="{{sort}}" id="sort">
+  </form>
+
+{% endblock contents %}
+{% block script %}{% endblock script %}

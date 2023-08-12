@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load qna_filter %}
+{% load static %}
+{% load humanize %}
+{% block style %}
+  <style>
+    .comment {
+      boarder-top: dotted 1px #ddd;
+      font-sixe: 0.7em;
+    }
+  </style>
+{% endblock style %}
+{% block contents %}
+  <h2 class="border-bottom py-2">
+    <!-- 질문제목-->
+    {{question.title}}
+  </h2>
+
+  <div class="row my-3">
+
+    <div class="col-11">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-text">
+            <!--질문내용-->
+            {{question.content}}
+          </div>
+          <div class="d-flex justify-content-end">
+            <div class="bg bg-light p-2 text-start">
+              <!--작성자-->
+              <div class="mb-2">작성자:
+                {% if request.user == question.author %}
+                  {{question.author}}
+                {% else %}
+                  {{ question.author|modify_author }}
+                {% endif %}
+              </div>
+              <!--질문작성날짜-->
+              {{question.regdate|date}}
+            </div>
+          </div>
+
+          <!-- 로그인 사용자 == 작성자일 때만 수정/삭제 버튼 활성화 -->
+          {% if request.user == question.author %}
+            <div class="my-3">
+              <a href="{% url 'qna:question_delete' question.id %}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- [Answer 영역] # Question과 answer 외래키 제약조건 상태 # question.answer_set # question.answer_set.count : question 달린 댓글 수 # question.answer_set.all : question 달린 댓글 전체 -->
+
+  <h5 class="border-bottom py-2 my-3">
+    <!-- 답변 개수-->
+    {{question.answer_set.count}}
+    개의 답변이 있습니다.
+  </h5>
+  <a name="answer_{{answer.id}}"></a>
+
+  {% for answer in question.answer_set.all %}
+    <div class="row my-3">
+      <div class="col-11">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-text">
+              <!--답변내용-->
+              {{answer.content}}
+            </div>
+            <div class="d-flex justify-content-end">
+              <div class="bg bg-light p-2 text-start">
+                <!--답변 작성자-->
+                <div class="mb-2">작성자:
+                  {{answer.author}}</div>
+                <!--답변작성날짜-->
+                {{answer.regdate}}
+              </div>
+            </div>
+            {% if request.user == answer.author %}
+              <div class="my-3">
+                <a href="{% url 'qna:answer_edit' answer.id question.id%}" class="btn btn-sm btn-outline-secondary">수정</a>
+                <a href="{% url 'qna:answer_delete' answer.id %}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
+              </div>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <div>
+    <a href="{% url 'qna:index' %}" class="btn btn-sm btn-primary return_list">목록으로</a>
+  </div>
+
+  <!-- 관리자만 답변 등록 가능 -->
+  {% if request.user.id == 1 %}
+    <form action="{% url 'qna:answer_create' question.id %}" method="post" class="my-3">
+      {% include 'errors.html' %}
+      {% csrf_token %}
+      <div class="form-group mb-3">
+        <textarea class="form-control" name="content" id="content" rows="10"></textarea>
+      </div>
+      <input type="submit" value="답변등록" class="btn btn-success" {% if not user.is_authenticated %} disabled="disabled" {% endif %}>
+    </form>
+  {% endif %}
+
+  <!-- 페이지 번호 클릭 / 검색 / 정렬 시 이동할 폼 -->
+  <form action="{% url 'qna:index' %}" method="get" id="actionForm">
+    <input type="hidden" name="keyword" value="{{keyword|default_if_none:''}}" id="keyword">
+    <input type="hidden" name="page" value="{{page}}" id="page">
+    <input type="hidden" name="sort" value="{{sort}}" id="sort">
+  </form>
+
+{% endblock contents %}
+{% block script %}
+  <script src="{% static 'js/detail.js' %}"></script>
+{% endblock script %}

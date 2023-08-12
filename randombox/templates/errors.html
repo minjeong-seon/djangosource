@@ -1,0 +1,11 @@
+<!--모델폼 사용할 때 : 에러 발생 시 서버에 안내 -->
+{% if form.errors %}
+  <div class="alert alert-danger">
+    {% for field in form %}
+      {% if field.errors %}
+        <strong>{{field.label}}</strong>
+        {{field.errors}}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}

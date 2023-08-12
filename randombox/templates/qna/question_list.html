@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load qna_filter %}
+{% load static %}
+{% load humanize %}
+{% block contents %}
+  <div class="my-3">
+    <!-- 검색창 -->
+    <div class="row mt-3 justify-content-between">
+      <div class="col-md-8">
+        <div class="input-group mb-3">
+          <input type="text" name="" id="top_keyword" class="form-control" value="{{keyword|default_if_none:''}}">
+          <button class="btn btn-outline-secondary" type="submit" id="btn_search">찾기</button>       
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- 게시판 분류 -->
+    <table class="table">
+      <thead> 
+        <tr class="table-success">
+          <th scope="col">번호</th>
+          <th scope="col">제목</th>
+          <th scope="col">작성자</th>
+          <th scope="col">작성일시</th>
+        </tr>
+      </thead>
+      <!-- 게시판 질문 리스트 -->
+      <tbody>
+        {% if question_list %}
+          {% for question in question_list %}
+            <tr>
+              <th scope="row">{{question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1}}</th>
+              <td>
+                <a href="{% url 'qna:detail' question.id %}" class="text-decoration-none text-dark">
+                  {{question.title}}
+                  <!-- 질문 처리 여부 표시 -->
+                  {% if question.answer_set.count > 0 %}
+                    <span class="text-danger small mx-2">
+                      {{question.answer_set.count}}
+                    </span>
+                  {% endif %}
+                </a>
+              </td>
+              <td>
+                {% if request.user == question.author %}
+                  {{question.author}}
+                {% else %}
+                  {{ question.author|modify_author }}
+                {% endif %}
+              </td>
+            
+              {% comment %} <td>{{question.created_at|date}}</td> {% endcomment %}
+              <td>{{question.regdate|naturaltime}}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="3">질문이 없습니다.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <div>
+      <a href="{% url 'qna:question_create' %}" class="btn btn-primary">질문 등록</a>
+    </div>
+
+    <!-- 페이징 처리 -->
+    <nav aria-label="">
+      <ul class="pagination justify-content-center">
+        {% if question_list.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="{{question_list.previous_page_number}}">Previous</a>
+          </li>
+        {% endif %}
+
+        {% for page in question_list.paginator.page_range %}
+          {% if page >= question_list.number|add:-5 and page <= question_list.number|add:5%}
+            <li class="page-item  {% if page == question_list.number %}active{% endif %}">
+              <a class="page-link" href="{{page}}">{{page}}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if question_list.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="{{question_list.next_page_number}}">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+
+
+</div>
+
+  <!--페이지 번호 클릭 / 검색 / 정렬 시 이동할 폼-->
+  <form action="{% url 'qna:index' %}" method="get" id="actionForm">
+    <input type="hidden" name="page" value="{{page}}" id="page">
+    <input type="hidden" name="sort" value="{{sort}}" id="sort">
+  </form>
+{% endblock contents %}
+{% block script %}
+  <script src="{% static 'js/list.js' %}"></script>
+{% endblock script %}

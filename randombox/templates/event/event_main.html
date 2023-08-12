@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load qna_filter %}
+{% load static %}
+{% load humanize %}
+
+{% block contents %}
+
+  <!-- 사이드바 -->
+  <button class="btn" id="custom_space" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Buy<br>Random Box</button>
+  <!-- 위 버튼 클릭 시 하단 사이드바 활성화 -->
+  <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">랜덤박스 구매하기</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="input-group">
+        <input type="number" id="quantity" class="form-control" value="1" min="1" step="1" max="5">
+        <button class="btn btn-outline-secondary up" type="button">▲</button>
+        <button class="btn btn-outline-secondary down" type="button">▼</button>
+        <span class="price_wrap">&nbsp;<span class="price">원</span></span>
+      </div>
+      <div class="confirm-group">
+        <p class="small">1인당 최대 5개까지 구매 가능합니다.</p>
+        <!-- 숨겨진 폼 필드와 구매 폼 -->
+        <form id="purchase-form" method="post" action="{% url 'random:paid_amount' %}">
+          {% csrf_token %}
+          <input type="hidden" id="price_field" name="new_amount" value="">
+          <button class="btn btn-primary" id="purchase-btn" type="submit">구매</button>
+        </form>
+        <input type="hidden" name="p_amount" id="p_amount" value="{{request.user.p_amount}}">
+      </div>
+    </div>
+  </div>
+  <!--사이드바 종료-->
+
+  <!-- 여기에 이벤트 페이지 코드 작성... -->
+  <div class="my-3">
+
+    <!-- 이벤트 이미지 -->
+    <img src="{% static 'img/randombox.png' %}" alt="" class="img-fluid d-block">
+
+    <!-- 명품 상품 목록 구간 -->
+    <div class="my-3">
+      <h3 class="text-center">하단 품목은 명품 상품 항목입니다.</h3>
+    </div>
+    <div class="container text-center">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5">
+        {% for brand in brand_all %}
+          <div class="col mt-3 border border-top-0">
+            <img src="{% static 'img/brand.png' %}" alt="명품상품" class="img-fluid d-block">
+            <p class="small text-end">{{ brand.pname}}</p>
+            <p class="small text-end">{{ brand.price|intcomma }}원</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 일반 상품 목록 구간 -->
+    <div class="my-3">
+      <h3 class="text-center">하단 품목은 일반 상품 항목입니다.</h3>
+    </div>
+    <div class="container text-center">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5">
+        {% for general in general_all %}
+          <div class="col mt-3 border border-top-0">
+            <img src="{% static 'img/general.png' %}" alt="일반상품" class="img-fluid d-block">
+            <p class="small text-end">{{ general.pname }}</p>
+            <p class="small text-end">{{ general.price|intcomma }}원</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+{% endblock contents %}
+{% block script %}
+  <script>
+    let loginUser = {% if user.is_authenticated %}true {% else %}false {% endif %};
+    document.addEventListener("DOMContentLoaded", function () {
+      let buy = document.getElementById("purchase-btn");
+      buy.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (!loginUser) {
+          alert("로그인해 주세요.");
+        }
+      });
+    });
+  </script>
+  <script src="{% static 'js/sidebar.js' %}"></script>
+{% endblock script %}

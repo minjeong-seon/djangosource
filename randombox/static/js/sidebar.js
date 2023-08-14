@@ -1,5 +1,6 @@
 // DOMContentLoaded : 웹페이지의 모든 html 요소 로드 후 발생하는 이벤트를 정의할 때 사용
 document.addEventListener("DOMContentLoaded", function () {
+  // 구매수량 input 태그 가져오기
   const qty = document.getElementById("quantity");
   const upButton = document.querySelector(".up");
   const downButton = document.querySelector(".down");
@@ -11,11 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // 초기 가격 표시
   updatePrice(defaultPrice);
 
+  // 수량 up == 구매금액도 up
   upButton.addEventListener("click", function () {
     incrementQuantity();
     updatePrice(defaultPrice * parseInt(qty.value));
   });
 
+  // 수량 down == 구매금액도 down
   downButton.addEventListener("click", function () {
     decrementQuantity();
     updatePrice(defaultPrice * parseInt(qty.value));

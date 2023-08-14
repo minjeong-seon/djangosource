@@ -1,5 +1,8 @@
 from django.shortcuts import render
+
+# utils.py 에서 작성한 데이터 함수 호출
 from .utils import common_data
+
 from qna.models import Question
 from .models import Sales
 
@@ -7,7 +10,7 @@ from .models import Sales
 from django.core.paginator import Paginator
 
 
-# 홈 - 이벤트 템플릿
+# 홈 - 이벤트 템플릿(비로그인 유저도 접근 가능해야 함)
 # 랜덤박스 모델 데이터, 로그인유저 p_amount 데이터 전달
 def main(request):
     login_user = request.user
@@ -22,16 +25,14 @@ def main(request):
 
 # 관리자 템플릿 : 총괄 모니터링
 # 미답변 질문 개수, 판매수량, 매출 관련 데이터 전달 & 템플릿에서 form data 전달 받아 처리
-
-
 def master(request):
     login_user = request.user
     cc = common_data(login_user)
 
-    # 답변이 없는 질문 조회
-    # select q.* from qna_question as q left join qna_answer as a on q.id = a.question_id where a.id is null;
+    # 답변이 등록되지 않은 질문 목록
     waiting_question = Question.objects.filter(answer__isnull=True).order_by("regdate")
 
+    # 미답변 질문 개수
     wq_count = waiting_question.count()
 
     page = request.GET.get("page", 1)

@@ -48,11 +48,10 @@ collapseLinks.forEach((drawer) => {
     console.log("서랍내용:", drawer_contents);
     console.log("서랍 classList:", drawer_contents.classList);
 
+    // 서랍 클래스이름에 show 가 있으면 없애고 없으면 넣기(=서랍 넣었다 뺐다 하기)
     if (drawer_contents.classList.contains("show")) {
-      console.log("안녕");
       drawer_contents.classList.remove("show");
     } else {
-      console.log("Hello");
       drawer_contents.classList.add("show");
     }
   });

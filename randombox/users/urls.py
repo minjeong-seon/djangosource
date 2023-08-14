@@ -3,7 +3,6 @@ from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 from . import views
 
-
 # reverse_lazy(앱이름:url 패턴이름) : url 지연 평가 -- view 함수 실행 성공 시 이동할 리다이렉션 경로 지정
 
 app_name = "users"

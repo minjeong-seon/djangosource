@@ -18,7 +18,7 @@ document.querySelector("#btn_search").addEventListener("click", (e) => {
   e.preventDefault();
 
   const search_bar = document.querySelector("#top_keyword");
-
+  console.log("검색어: ", search_bar.value);
   if (search_bar.value == "") {
     alert("검색어를 입력해 주세요.");
     search_bar.focus();
@@ -27,27 +27,4 @@ document.querySelector("#btn_search").addEventListener("click", (e) => {
 
   document.querySelector("#keyword").value = search_bar.value;
   document.querySelector("#actionForm").submit();
-});
-
-// 정렬 기준 변화 시 값을 가져와서
-// 페이지는 기본 1로 변경
-// actionForm 안 sort에 값 변경 후 actionForm 전송
-
-document.querySelector(".so").addEventListener("change", (e) => {
-  document.querySelector("#page").value = 1;
-  document.querySelector("#sort").value = e.target.value;
-  document.querySelector("#actionForm").submit();
-});
-
-// 제목 클릭 시, a태그 중지 + href 값 가져오기
-// actionForm의 action 값을 href로 변경후 submit
-const titles = document.querySelectorAll(".text-decoration-none");
-titles.forEach((title) => {
-  title.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    let actionForm = document.querySelector("#actionForm");
-    actionForm.action = e.target.href;
-    actionForm.submit();
-  });
 });

@@ -136,3 +136,12 @@ LOGOUT_REDIRECT_URL = "/"
 
 # 기본 제공 말고 커스텀 유저 사용
 AUTH_USER_MODEL = "users.CustomUser"
+
+# 구글 메일 발송용 SMTP 서버 설정
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "tjsalswjd95@gmail.com"
+EMAIL_HOST_PASSWORD = "wbmhzblwjtvnrigt"
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

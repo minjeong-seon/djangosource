@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load qna_filter %}
+{% load static %}
+{% load humanize %}
+{% block contents %}
+  <div class="my-3">
+    <!-- 검색창 -->
+    <div class="py-3">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col-3">
+            <!-- 랜덤박스 분류 선택 영역 -->
+            <select class="form-select so" id="category" aria-label="Default select example">
+              <option value="customer_no" {% if sort == 'customer_no' %} selected{% endif %}>고객 구분</option>
+              <option value="not_win" {% if sort == 'not_win' %} selected{% endif %}>일반 구매 고객</option>
+              <option value="win" {% if sort == 'win' %} selected{% endif %}>당첨 구매 고객</option>
+            </select>
+            
+            <!-- 랜덤박스 분류 선택 영역 종료-->
+          </div>
+          <div class="col">
+            <div class="input-group">
+              <input type="text" name="" id="top_keyword" class="form-control" placeholder="아이디 혹은 이메일 입력" value="">
+              <button class="btn btn-outline-secondary" type="submit" id="btn_search">찾기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+   <!-- 게시판 분류 -->
+<table class="table">
+  <thead>
+    <tr class="table-dark table-striped">
+      <th class="border text-center" scope="col">회원번호</th>
+      <th class="border text-center" scope="col">아이디</th>
+      <th class="border text-center" scope="col">이메일</th>
+      <th class="border text-center" scope="col">주소</th>
+      <th class="border text-center" scope="col">구매금액</th>
+      <th class="border text-center" scope="col">당첨여부</th>
+    </tr>
+  </thead>
+  <!-- 회원정보 리스트 -->
+  <tbody>
+    <!-- 반복 구간 -->
+    {% if users %}
+      {% for user in users %}
+        <tr>
+          <th class="border text-center" scope="row">{{user.id}}</th>
+          <td class="border text-center">{{user.username}}</td>
+          <td class="border text-center">{{user.email}}</td>
+          <td class="border text-center">{{user.address}}</td>
+          <td class="border text-center">{{user.p_amount}}</td>
+          <td class="border text-center">
+            {% if user.brand_id %}
+            <a class="drawer text-decoration-none text-dark text-center fw-bolder" data-bs-toggle="collapse1" href="#collapseExample{{user.id}}" role="button" aria-expanded="false" aria-controls="collapseExample{{user.id}}">🏷️ 브랜드 상품 당첨</a>
+            {% else %}
+              <a class="drawer text-decoration-none text-dark text-center fw-bolder" data-bs-toggle="collapse1" href="#collapseExample{{user.id}}" role="button" aria-expanded="false" aria-controls="collapseExample{{user.id}}">일반 상품 당첨</a>
+            {% endif %}
+          </td>
+        </tr>
+        <tr class="collapse1 custom_drawer" id="collapseExample{{user.id}}">
+          <td colspan="6">
+            <div class="card card-body">
+              <!-- 서랍 내용 -->
+              <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">구매 상품 목록
+                    </button>
+                  </h2>
+                  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                      <!-- 상품 목록 반복 구간-->
+                      
+                          <table class="table" style="margin-bottom: 0;">
+                            <tbody>
+                              {% if user.general %}
+                                {% for item in user.general.all %}
+                                  <tr class="text-end">
+                                    <td class=" text-end fw-semibold"> {{item.id}}</td>
+                                    <td class="fw-medium"> {{item.pname}}</td>
+                                    <td class="fw-medium"> {{item.price|intcomma}} 원</td>
+                                  </tr>
+                                {% endfor %}
+                              {% endif %}
+                              {% if user.brand_id %}
+                                {% with brand=user.brand %}
+                                  <tr class="text-end">
+                                    <td class=" text-end fw-semibold"> {{brand.id}}</td>
+                                    <td class="fw-medium"> 🏷️ {{brand.pname}}</td>
+                                    <td class="fw-medium"> {{brand.price|intcomma}} 원</td>
+                                  </tr>
+                                {% endwith %}
+                              {% endif %}
+                            <!-- 상품 목록 반복 구간 종료-->
+                            </tbody>
+                          </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                      등록한 질문 목록
+                    </button>
+                  </h2>
+                  <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                      <!-- 상품 목록 반복 구간-->
+                      <table class="table" style="margin-bottom: 0;">
+                        <tbody>
+                          {% if user.author_question.all %}
+                            {% for question in user.author_question.all %}
+                                <tr  class="text-end">
+                                    <th class=" text-end fw-semibold">{{ question.id }}</th>
+                                    <td class="fw-medium">{{ question.title }}</td>
+                                    <td class="fw-medium">{{ question.regdate|naturaltime }}</td>
+                                    <td class="fw-medium"><a href="{% url 'qna:detail' question.id %}" class="btn btn-outline-primary">답변하기</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                      </table>
+                      <!-- 상품 목록 반복 구간 종료-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 서랍 내용 끝-->
+              
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    {% endif %}
+    <!-- 반복 구간 종료 -->
+  </tbody>
+</table>
+
+<!-- 부트스트랩 5 스크립트 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- 페이징 처리 -->
+    <nav aria-label="">
+      <ul class="pagination justify-content-center">
+        {% if users.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{users.previous_page_number}}">Previous</a>
+          </li>
+        {% endif %}
+
+        {% for page in users.paginator.page_range %}
+          {% if page >= users.number|add:-5 and page <= users.number|add:5%}
+            <li class="page-item  {% if page == users.number %}active{% endif %}">
+              <a class="page-link" href="?page={{page}}">{{page}}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if users.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{users.next_page_number}}">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <!-- 페이징 처리 종료 -->
+
+    <!--페이지 번호 클릭 / 검색 / 정렬 시 이동할 폼-->
+    <form action="{% url 'customer' %}" method="get" id="actionForm">
+      <input type="hidden" name="keyword" value="{{keyword|default_if_none:''}}" id="keyword">
+      <input type="hidden" name="page" value="{{page}}" id="page">
+      <input type="hidden" name="sort" value="{{sort}}" id="sort">
+    </form>
+
+  {% endblock contents %}
+  {% block script %}
+  <script src="{% static 'js/customer.js' %}"></script>
+  {% endblock script %}

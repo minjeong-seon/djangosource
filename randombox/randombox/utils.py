@@ -16,9 +16,13 @@ def common_data(login_user):
     general_list = General.objects.exclude(stock_qty=0)
     brand_all = Brand.objects.all()
     brand_list = Brand.objects.exclude(stock_qty=0)
+    # brand_id 필드값이 존재하는 데이터만 가져오기
+    win_user = CustomUser.objects.filter(brand_id__isnull=False)
+    # brand_id 필드값이 존재하지 않는 데이터만 가져오기
+    not_win_user = CustomUser.objects.filter(brand_id__isnull=True, p_amount__gt=0)
 
     if login_user.is_authenticated:
-        user_list = CustomUser.objects.all()
+        user_list = CustomUser.objects.order_by("id")
 
         # CustomUser 모델의 p_amount 필드 값의 합계를 계산
         total_sales = CustomUser.objects.aggregate(total=Sum("p_amount"))["total"] or 0
@@ -51,6 +55,8 @@ def common_data(login_user):
             "remain_sales": remain_sales,
             "min_brand_price": min_brand_price,
             "buy_total": buy_total,
+            "win_user": win_user,
+            "not_win_user": not_win_user,
         }
     else:
         common_context = {

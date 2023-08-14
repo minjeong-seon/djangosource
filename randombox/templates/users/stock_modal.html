@@ -1,0 +1,82 @@
+<div class="modal fade" id="inventoryModal" tabindex="-1" aria-labelledby="inventoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: 900px;">
+
+    <!-- 추가된 클래스: modal-dialog-scrollable -->
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inventoryModalLabel">재고관리</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="py-3">
+          <div class="container text-center">
+            <div class="row">
+              <div class="col-3">
+                <!-- 랜덤박스 분류 선택 영역 -->
+                <select class="form-select" id="category" aria-label="Default select example">
+                  <option selected="selected">상품 분류</option>
+                  <option value="1">General Stocks</option>
+                  <option value="2">Brand Stocks</option>
+                </select>
+                <!-- 랜덤박스 분류 선택 영역 종료-->
+              </div>
+              <div class="col">
+                <div class="input-group">
+                  <input type="text" name="" id="top_keyword" class="form-control" value="">
+                  <button class="btn btn-outline-secondary" type="submit" id="btn_search">찾기</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 랜덤박스 재고 리스트 -->
+        <table class="table">
+          <thead>
+            <tr class="table-warning text-center">
+              <th scope="col">상품번호</th>
+              <th scope="col">상품명</th>
+              <th scope="col">가격</th>
+              <th scope="col">재고수량</th>
+            </tr>
+          </thead>
+          <tbody id="stockTableBody">
+            <tr>
+              <th>
+                <h4 class="text-center">분류를 선택해 주세요.</h4>
+                <div class="input-group">
+                  <input type="number" id="quantity" class="form-control" value="1" min="1" step="1">
+                  <button class="btn btn-outline-secondary up" type="button">▲</button>
+                  <button class="btn btn-outline-secondary down" type="button">▼</button>
+                </div>
+              </th>
+
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 페이징 처리 -->
+        <div class="row justify-content-center mt-3">
+          <div class="col-auto">
+            <button class="btn btn-light" id="prevButton" disabled="disabled">이전</button>
+            <span id="currentPage" class="mx-3">1</span>
+            <button class="btn btn-light" id="nextButton">다음</button>
+          </div>
+        </div>
+        <!-- 페이징 처리 종료 -->
+
+        <div class="modal-footer">
+          <!--검색 시 이동할 폼-->
+          <form action="/master/stock/" method="get" id="actionForm">
+            <input type="hidden" name="keyword" value="{{keyword|default_if_none:''}}" id="keyword">
+            <input type="hidden" name="page" value="{{page}}" id="page">
+            <input type="hidden" name="sort" value="{{sort}}" id="sort">
+          </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>

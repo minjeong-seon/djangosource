@@ -97,6 +97,7 @@
 
   <!--페이지 번호 클릭 / 검색 / 정렬 시 이동할 폼-->
   <form action="{% url 'qna:index' %}" method="get" id="actionForm">
+    <input type="hidden" name="keyword" value="{{keyword|default_if_none:''}}" id="keyword">
     <input type="hidden" name="page" value="{{page}}" id="page">
     <input type="hidden" name="sort" value="{{sort}}" id="sort">
   </form>

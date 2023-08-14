@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     # 주소 필드 추가
     address = models.CharField(max_length=255)
     # 구매금액 필드 추가
-    p_amount = models.IntegerField()
+    p_amount = models.IntegerField(default=0)
     brand = models.ForeignKey(
         Brand, on_delete=models.CASCADE, null=True, blank=True  # Product 모델 사용
     )

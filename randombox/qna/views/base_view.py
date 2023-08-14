@@ -15,25 +15,13 @@ def index(request):
     page = request.GET.get("page", 1)  # 페이지 정보가 안 들어오면 default = 1로 설정
     keyword = request.GET.get("keyword", "")
     sort = request.GET.get("sort", "recent")
-
-    if sort == "recommend":
-        question_list = Question.objects.annotate(num_voter=Count("voter")).order_by(
-            "-num_voter", "-regdate"
-        )
-
-    elif sort == "popular":
-        question_list = Question.objects.annotate(num_answer=Count("answer")).order_by(
-            "-num_answer", "-regdate"
-        )
-    else:
-        question_list = Question.objects.order_by("-regdate")
-
+    question_list = Question.objects.order_by("-regdate")
     # 전체 리스트에서 검색어를 기준으로 필터링 하기
     # 필터링 기준 : 제목, 내용, 질문작성자, 답변작성자
     # __contains : 대소문자 구분  __icontains : 대소문자 구분X
     if keyword:
         question_list = question_list.filter(
-            Q(subject__icontains=keyword)
+            Q(title__icontains=keyword)
             | Q(content__icontains=keyword)
             | Q(author__username__icontains=keyword)
             | Q(answer__author__username__icontains=keyword)

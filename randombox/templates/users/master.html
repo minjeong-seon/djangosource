@@ -24,10 +24,12 @@
             <h6 class="mb-2 text-body-secondary">명품상품:
               <span class="text-blue">{{b_stock}}</span>
               개</h6>
-            <a href="#" class="card-link btn btn-primary">제품별 재고 수량</a>
+            <a href="#" id="openModalButton" class="card-link btn btn-primary" data-bs-toggle="modal" data-bs-target="#inventoryModal">제품별 재고 수량</a>
           </div>
+
         </div>
       </div>
+
       <div class="col order-5">
         <div class="col">
           <div class="card" style="height: 180px;background: #f3f3f3;">
@@ -36,7 +38,7 @@
               <h6 class="card-subtitle mb-2 text-body-secondary">
                 <span class="text-blue">{{wq_count}}</span>개</h6>
               <div class="mt-auto">
-                <a href="#" class="card-link btn btn-primary">QnA 게시판</a>
+                <a href="{% url 'qna:index' %}" class="card-link btn btn-primary">QnA 게시판</a>
               </div>
             </div>
           </div>
@@ -50,14 +52,15 @@
               <h6 class="card-subtitle mb-2 text-body-secondary">
                 <span class="text-blue">{{total_sales|intcomma}}</span>원</h6>
               <h6 class="mb-2 text-body-secondary">
-                {% if total_sales == 0 or remain_sales < min_brand_price or total_sales == remain_sales %}
+                {% if total_sales == 0 or remain_sales > min_brand_price %}
                   <span class="text-red">브랜드 상품 출고 대기</span>
                 {% else %}Balance:
-                  <span class="text-blue">{{remain|intcomma}}</span>원
+                  <span class="text-blue">{{remain_sales|intcomma}}</span>원
                 {% endif %}
               </h6>
               <div class="mt-auto">
-                <a href="#" class="card-link btn btn-primary">구매자 현황</a>
+                <a href="{% url 'customer' %}" class="card-link btn btn-primary">구매자 현황</a>
+
               </div>
             </div>
           </div>
@@ -117,7 +120,6 @@
   <!-- 미답변 질문 목록 종료-->
 
   <!-- 페이징 처리 -->
-  <!-- 페이징 처리 -->
   <nav aria-label="">
     <ul class="pagination justify-content-center">
       {% if waiting_question.has_previous %}
@@ -143,13 +145,12 @@
   </nav>
   <!-- 페이징 처리 종료 -->
 
-  <!-- 페이징 처리 종료 -->
-
-  <!--페이지 번호 클릭 / 정렬 시 이동할 폼-->
-  <form action="#" method="get" id="actionForm">
-    <input type="hidden" name="page" value="{{page}}" id="page">
-    <input type="hidden" name="sort" value="{{sort}}" id="sort">
-  </form>
+  {% include 'users/stock_modal.html' %}
 
 {% endblock contents %}
-{% block script %}{% endblock script %}
+{% block script %}
+  <script>
+    const csrfToken = "{{ csrf_token }}";
+  </script>
+  <script src="{% static 'js/stock_modal.js' %}"></script>
+{% endblock script %}

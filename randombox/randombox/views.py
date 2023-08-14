@@ -47,8 +47,10 @@ def master(request):
         "sort": sort,
         "waiting_question": page_obj,
         "wq_count": wq_count,
-        "remain": remain.remain_sales,
+        "remain_sales": remain.remain_sales,
     }
+
+    print("관리자 페이지 남은 매출: ", remain.remain_sales)
     return render(request, "users/master.html", context)
 
 

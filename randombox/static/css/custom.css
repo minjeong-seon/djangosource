@@ -45,3 +45,17 @@
 .text-blue {
   color: #158fc1;
 }
+
+.collapse1 {
+  &:not(.show) {
+    display: none;
+  }
+}
+
+.custom_input_group {
+  width: 120px !important;
+}
+
+.mg-r {
+  margin-right: 1em;
+}

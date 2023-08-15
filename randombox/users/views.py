@@ -17,6 +17,7 @@ from django.http import JsonResponse
 from django.contrib.auth.views import LoginView
 from .forms import UserForm
 
+
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm  
 

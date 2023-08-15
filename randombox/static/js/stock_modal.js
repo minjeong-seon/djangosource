@@ -12,6 +12,60 @@ document.addEventListener("DOMContentLoaded", function () {
   let totalPages = 1;
 
   // =====================================================================
+  /** 분류 선택 변경 감지 -selectedValue으로 view 함수에서 JSON 데이터 parsing
+  */
+  category.addEventListener("change", (event) => {
+    const selectedValue = event.target.value;
+    console.log("selectedValue", selectedValue);
+    openModalButton.href = `/master/stock/${selectedValue}/`;
+
+    if (selectedValue === "1" || selectedValue === "2") {
+      fetch(`/master/stock/${selectedValue}/`)
+        .then((response) => response.json())
+        .then((responseData) => {
+          dataList = [];
+
+          if (selectedValue === "1" && responseData.general_list) {
+            try {
+              dataList = JSON.parse(responseData.general_list);
+            } catch (error) {
+              console.error("Error parsing JSON:", error);
+            }
+          } else if (selectedValue === "2" && responseData.brand_list) {
+            try {
+              dataList = JSON.parse(responseData.brand_list);
+            } catch (error) {
+              console.error("Error parsing JSON:", error);
+            }
+          } else {
+            tbody.textContent = "일치하는 결과가 없습니다.";
+            return;
+          }
+
+          console.log(dataList);
+
+          totalPages = Math.ceil(dataList.length / PAGE_ITEMS);
+          updateTable(currentPage);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    } else {
+      dataList = [];
+      tbody.innerHTML = `
+        <tr>
+            <td>None</td>
+            <td>None</td>
+            <td>None</td>
+            <td>None</td>
+        </tr>
+      `;
+    }
+
+    updatePageNumber();
+  });
+
+  // =====================================================================
   /** selectedValue + keyword 같이 manage_stock 함수에 넘겨서 데이터 받아야 함
    *  검색창 `찾기` 버튼 클릭 시 맞는 데이터 모달창에 뿌리기
    */
@@ -75,42 +129,42 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 
-  // =====================================================================
-  /** 재고 수량 입력: 상하버튼 활용 ver
-   *  클릭 상태 유지하면 계속 값 상승/하락
-   */
-  const quantityInput = document.getElementById("quantity");
-  const upButton = document.querySelector(".up");
-  const downButton = document.querySelector(".down");
-  var isPressed = false;
+  // // =====================================================================
+  // /** 재고 수량 입력: 상하버튼 활용 ver
+  //  *  클릭 상태 유지하면 계속 값 상승/하락
+  //  */
+  // const quantityInput = document.getElementById("quantity");
+  // const upButton = document.querySelector(".up");
+  // const downButton = document.querySelector(".down");
+  // var isPressed = false;
+  
+  // upButton.addEventListener("mouseup", ()=> {
+  //   isPressed = false;
+  // });
 
-  upButton.addEventListener("mouseup", function (event) {
-    isPressed = false;
-  });
+  // upButton.addEventListener("mousedown", ()=>{
+  //   isPressed = true;
+  //   doInterval("1");
+  // });
 
-  upButton.addEventListener("mousedown", function (event) {
-    isPressed = true;
-    doInterval("1");
-  });
+  // downButton.addEventListener("mouseup", ()=>{
+  //   isPressed = false;
+  // });
 
-  downButton.addEventListener("mouseup", function (event) {
-    isPressed = false;
-  });
+  // downButton.addEventListener("mousedown", ()=> {
+  //   isPressed = true;
+  //   doInterval("-1");
+  // });
 
-  downButton.addEventListener("mousedown", function (event) {
-    isPressed = true;
-    doInterval("-1");
-  });
+  // function doInterval(action) {
+  //   if (isPressed) {
+  //     quantityInput.value = parseInt(quantityInput.value) + parseInt(action);
 
-  function doInterval(action) {
-    if (isPressed) {
-      quantityInput.value = parseInt(quantityInput.value) + parseInt(action);
-
-      setTimeout(function () {
-        doInterval(action);
-      }, 200);
-    }
-  }
+  //     setTimeout(function () {
+  //       doInterval(action);
+  //     }, 200);
+  //   }
+  // }
 
   // =====================================================================
   /** 재고 수량 관리하기
@@ -189,60 +243,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // =====================================================================
-  /** 분류 선택 변경 감지 -selectedValue으로 view 함수에서 JSON 데이터 parsing
-  */
-  category.addEventListener("change", (event) => {
-    const selectedValue = event.target.value;
-    console.log("selectedValue", selectedValue);
-    openModalButton.href = `/master/stock/${selectedValue}/`;
-
-    if (selectedValue === "1" || selectedValue === "2") {
-      fetch(`/master/stock/${selectedValue}/`)
-        .then((response) => response.json())
-        .then((responseData) => {
-          dataList = [];
-
-          if (selectedValue === "1" && responseData.general_list) {
-            try {
-              dataList = JSON.parse(responseData.general_list);
-            } catch (error) {
-              console.error("Error parsing JSON:", error);
-            }
-          } else if (selectedValue === "2" && responseData.brand_list) {
-            try {
-              dataList = JSON.parse(responseData.brand_list);
-            } catch (error) {
-              console.error("Error parsing JSON:", error);
-            }
-          } else {
-            tbody.textContent = "일치하는 결과가 없습니다.";
-            return;
-          }
-
-          console.log(dataList);
-
-          totalPages = Math.ceil(dataList.length / PAGE_ITEMS);
-          updateTable(currentPage);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    } else {
-      dataList = [];
-      tbody.innerHTML = `
-        <tr>
-            <td>None</td>
-            <td>None</td>
-            <td>None</td>
-            <td>None</td>
-        </tr>
-      `;
-    }
-
-    updatePageNumber();
-  });
-
-  // =====================================================================
   /** 페이징 처리 - 이전 버튼 클릭 시 현재 페이지 번호 -1
    */
   prevButton.addEventListener("click", () => {
@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", function () {
               <div class="custom_input_group">
                 <div class="input-group" id="custom_input">
                   <input type="hidden" id="csrf-token" name="csrfmiddlewaretoken" value="${csrfToken}">
-                  <input type="number" name="quantity" id="quantity-${item.pk}" class="form-control" value="0" min="1" step="1">
+                  <input type="number" name="quantity" id="quantity-${item.pk}" class="form-control" value="" min="0" step="1">
                   <button class="qty-ctrl btn btn-outline-warning ms-1" data-id="${item.pk}">확인</button>
                 </div>
               </div>

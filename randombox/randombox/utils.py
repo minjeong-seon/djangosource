@@ -1,4 +1,5 @@
-from .models import General, Brand
+from django.db import models
+from .models import General, Brand, Sales
 from users.models import CustomUser
 
 # ORM 데이터 필드값 합계 함수
@@ -46,8 +47,10 @@ def common_data(login_user):
         print("로그인 유저 총 구매 수량: ", buy_total)
         print("현재 총매출: ", total_sales)
         
-        # 남은 매출 계산: 초기값 = (0보다 크면)총매출과 동일함
-        remain_sales = max(total_sales, 0)
+        # 1번째 구매 후 남은 매출 구하기
+        init_remain_sales, _ = Sales.objects.get_or_create(pk=1, defaults={'remain_sales': 0})
+       
+
 
         common_context = {
             "general_all": general_all,
@@ -58,7 +61,7 @@ def common_data(login_user):
             "g_stock": g_stock,
             "b_stock": b_stock - reduced_stock_qty,
             "total_sales": total_sales,
-            "remain_sales": remain_sales,
+            "remain_sales": init_remain_sales,
             "min_brand_price": min_brand_price,
             "buy_total": buy_total,
             "win_user": win_user,

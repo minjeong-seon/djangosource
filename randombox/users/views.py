@@ -14,6 +14,19 @@ from random import choices, choice
 # 디렉토리 --> Json 데이터로 반환
 from django.http import JsonResponse
 
+from django.contrib.auth.views import LoginView
+from .forms import UserForm
+
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.forms import AuthenticationForm  
+
+
+# 커스텀 유저용 로그인뷰 사용
+class CustomLoginView(LoginView):
+    form_class = AuthenticationForm  # AuthenticationForm을 사용
+    template_name = 'users/login.html'
+
+
 # 회원가입 함수
 def register(request):
     if request.method == "POST":
@@ -58,100 +71,96 @@ def paid_amount(request):
 
         cc = common_data(user)
 
-        # 구매금액 0 이상인 유저 중 일반상품 당첨 수량이 5개 미만인 유저 조건 설정
-        filtered_users = [
-            customer
-            for customer in cc["user_list"]
-            if customer.p_amount > 0 and customer.general.count() < 5
-        ]
-
-        # 확인용 출력문
-        if filtered_users:
-            print("filtered_users가 비어 있지 않음")
-        else:
-            print("filtered_users가 비어 있음")
+        int_cc_remain = cc["remain_sales"].remain_sales
+        cc_obj = Sales.objects.get(remain_sales=int_cc_remain)
 
         print("브랜드 최저가: ", cc["min_brand_price"])
-
-
-        # 남은 매출 초기화 및 cc데이터 할당
-        r = Sales.objects.first()
-        r.remain_sales = cc["remain_sales"]
-        print("함수 실행 전 남은 매출: ", r.remain_sales)
+        print("함수 실행 전 남은 매출DB: ", int_cc_remain ," | ", cc_obj.remain_sales)
+        
 
         # 남은 매출 >= 브랜드 최저가 : 브랜드 재고 감소 & 랜덤유저.brand_id 데이터 삽입
-        if r.remain_sales >= cc["min_brand_price"]:
+        if int_cc_remain >= cc["min_brand_price"]:
             print("브랜드상품 함수 실행")
+            # 남은 매출 - 브랜드 최저가() ==> 필드값 업데이트
+            int_cc_remain -= cc["min_brand_price"]
+            cc_obj.remain_sales = int_cc_remain
+            cc_obj.save()
 
-            # 남은 매출 - 브랜드 최저가 ==> 필드값 업데이트
-            cc["remain_sales"] -= cc["min_brand_price"]
-            r.remain_sales = cc["remain_sales"]
-            r.save()
-
-            print("남은 매출: ", cc["remain_sales"])
             print("총매출: ", cc["total_sales"])
+            print("당첨 후 남은 매출: ", int_cc_remain,"|",cc_obj.remain_sales)
 
-            # 필터 조건에 맞는 유저 데이터 1개(=choice) 랜덤 추출
-            if filtered_users:
-                random_user = choice(filtered_users)
-                print("랜덤 유저: ", random_user)
+            # 로그인 유저가 당첨된 일반상품이 구매 수량보다 적은 경우를 필터링
+            if user.p_amount > 0 and user.general.count() < buy_amount:
+                print("당첨 유저 확인: ", user)
 
-                # 브랜드 모델 중 가격 필드값이 브랜드 최저가와 일치하는 데이터 ==> 유저 정보에 업뎃 & 재고 감소 
+                # 브랜드.가격 필드값이 브랜드 최저가와 일치하면:
                 for brand in cc["brand_list"]:
                     if brand.price == cc["min_brand_price"]:
-                        random_user.brand_id = brand.id
-                        print("브랜드 당첨자 상품 목록: ", random_user.brand_id)
-                        random_user.save()
+                        # 유저 정보에 해당 데이터 업뎃
+                        user.brand_id = brand.id
+                        user.save()
+                        print("브랜드 당첨자 상품 목록: ", user.brand_id)
+
+                        # 해당 데이터 재고수량 감소(최소값 == 0)
                         brand.stock_qty = max(brand.stock_qty - 1, 0)
                         brand.save()
-                        # 템플릿에 전달할 재고수량 업데이트
-                        cc["reduced_stock_qty"] = brand.stock_qty
+                        print("당첨 후 해당 상품 재고 수량: ", brand.stock_qty)
 
                         # 당첨자 이메일 발송
                         reply_email = EmailMessage(
                             "🎊명품 랜덤박스 당첨 안내🎊",
-                            f"안녕하세요. {random_user.username} 님, 랜덤박스 당첨을 축하합니다!🎉 \n\n당첨되신 상품은 메일 수신일로부터 3일 이내 발송 예정입니다.\n\n구매상품: {brand.pname}",
-                            to=[random_user.email],
+                            f"안녕하세요. {user.username} 님, 랜덤박스 당첨을 축하합니다!🎉 \n\n당첨되신 상품은 메일 수신일로부터 3일 이내 발송 예정입니다.\n\n구매상품: {brand.pname}",
+                            to=[user.email],
                         )
-
                         reply_email.send()
-
                         break
 
         # 남은 매출 < 브랜드 최저가 : 랜덤일반 재고 감소 & 로그인유저.general 데이터 삽입
-        elif cc["remain_sales"] < cc["min_brand_price"]:
+        elif int_cc_remain < cc["min_brand_price"]:
             print("일반상품 함수 실행")
             
-            # 남은 매출 + 구매금액
-            r.remain_sales += new_amount
-            r.save()
+            # 남은 매출 업데이트(기존 금액 + 구매 금액)
+            int_cc_remain += new_amount
+            cc_obj.remain_sales = int_cc_remain
+            cc_obj.save()
+            print("남은 매출 업데이트: ",cc_obj.remain_sales,"|",int_cc_remain)
 
-            # 일반 상품 무작위 추출(구매수량만큼)
-            random_generals = choices(cc["general_list"], k=buy_amount)
-            for idx, item in enumerate(random_generals):    # --> 콘솔에 찍어보려고 요란하게 함
-                print(f"랜덤 상품 목록 {idx+1}:", item)
+            if int_cc_remain >= cc["min_brand_price"]:
+                print("당첨하러 돌아갑니다.")
+                process_remaining_sales(int_cc_remain, cc_obj, cc, user, buy_amount)
+            else:
+                # 일반 상품 무작위 추출(구매수량만큼)
+                random_generals = choices(cc["general_list"], k=buy_amount)
+                for idx, item in enumerate(random_generals):    # --> 콘솔에 찍어보려고 요란하게 함
+                    print(f"랜덤 상품 목록 {idx+1}:", item)
 
-            print("총매출: ", cc["total_sales"])
-            print("남은 매출: ", cc["remain_sales"])
+                print("총매출: ", cc["total_sales"])
+                print("남은 매출: ", int_cc_remain)
 
-            for random_item in random_generals:
-                # 랜덤 추출한 일반 상품 구매 유저 데이터에 업뎃
-                user.general.add(random_item.id)
-                print("랜덤 상품 아이디: ", random_item.id)
+                for random_item in random_generals:
+                    # 랜덤 추출한 일반 상품 구매 유저 데이터에 업뎃
+                    user.general.add(random_item.id)
+                    print("랜덤 상품 아이디: ", random_item.id)
 
-                # 일반 상품 목록 중 랜덤 추출 상품과 일치하는 데이터 재고 감소
-                for general in cc["general_list"]:
-                    if general.id == random_item.id:
-                        general.stock_qty = max(general.stock_qty - 1, 0)
-                        general.save()
-                        cc["reduced_stock_qty"] = general.stock_qty
-                        break
-
+                    # 일반 상품 목록 중 랜덤 추출 상품과 일치하는 데이터 재고 감소
+                    for general in cc["general_list"]:
+                        if general.id == random_item.id:
+                            general.stock_qty = max(general.stock_qty - 1, 0)
+                            general.save()
+                            cc["reduced_stock_qty"] = general.stock_qty
+                            break
+            
+        
+        
+        # 메인 페이지에서 코드 실행
         return render(
             request,
-            "event/event_main.html",
+            "event/event_main.html", cc
         )
-    return JsonResponse({"success": False})
+
+    # 관리자 페이지에서도 함수 실행 내용 동적으로 보여줘야 하므로  HttpResponse object 리턴
+    return JsonResponse({"success": False}) # 렌더링 실패하면 이거임
+
 
 
 # 구매 고객 확인(관리자 페이지 - 구매자 현황 탭)
@@ -190,3 +199,48 @@ def customer(request):
     }
 
     return render(request, "users/customer.html", context)
+
+
+
+# paid_amount 함수에서 elif 블록 내부 호출용(브랜드 당첨 함수)
+def process_remaining_sales(int_cc_remain, cc_obj, cc, user, buy_amount):
+        
+        print("함수 실행 전 남은 매출DB: ", int_cc_remain ," | ", cc_obj.remain_sales)
+
+        if int_cc_remain >= cc["min_brand_price"]:
+            print("브랜드상품 함수 실행")
+            # 남은 매출 - 브랜드 최저가() ==> 필드값 업데이트
+            int_cc_remain -= cc["min_brand_price"]
+            cc_obj.remain_sales = int_cc_remain
+            cc_obj.save()
+
+            print("총매출: ", cc["total_sales"])
+            print("당첨 후 남은 매출: ", int_cc_remain,"|",cc_obj.remain_sales)
+
+            # 로그인 유저가 당첨된 일반상품이 구매 수량보다 적은 경우를 필터링
+            if user.p_amount > 0 and user.general.count() < buy_amount:
+                print("당첨 유저 확인: ", user)
+
+                # 브랜드.가격 필드값이 브랜드 최저가와 일치하면:
+                for brand in cc["brand_list"]:
+                    if brand.price == cc["min_brand_price"]:
+                        # 유저 정보에 해당 데이터 업뎃
+                        user.brand_id = brand.id
+                        user.save()
+                        print("브랜드 당첨자 상품 목록: ", user.brand_id)
+
+                        # 해당 데이터 재고수량 감소(최소값 == 0)
+                        brand.stock_qty = max(brand.stock_qty - 1, 0)
+                        brand.save()
+                        print("당첨 후 해당 상품 재고 수량: ", brand.stock_qty)
+
+                        # 당첨자 이메일 발송
+                        reply_email = EmailMessage(
+                            "🎊명품 랜덤박스 당첨 안내🎊",
+                            f"안녕하세요. {user.username} 님, 랜덤박스 당첨을 축하합니다!🎉 \n\n당첨되신 상품은 메일 수신일로부터 3일 이내 발송 예정입니다.\n\n구매상품: {brand.pname}",
+                            to=[user.email],
+                        )
+                        reply_email.send()
+                        break
+            return True
+        return False

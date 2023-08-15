@@ -40,7 +40,14 @@ def master(request):
 
     paginator = Paginator(waiting_question, 10)
     page_obj = paginator.get_page(page)
-    remain = Sales.objects.first()
+
+    # 브랜드 상품 당첨까지 남은 금액(`+얼마`로 표현하기)
+    remain = Sales.objects.first().remain_sales
+    raffle_sales = cc["min_brand_price"] - remain
+
+    if raffle_sales < 0:
+        raffle_sales = +raffle_sales
+    print("당첨 진행까지 남은 매출: ", raffle_sales)
 
     context = {
         **cc,
@@ -48,10 +55,10 @@ def master(request):
         "sort": sort,
         "waiting_question": page_obj,
         "wq_count": wq_count,
-        "remain_sales": remain.remain_sales,
+        "raffle_sales": raffle_sales,
     }
 
-    print("관리자 페이지 남은 매출: ", remain.remain_sales)
+    
     return render(request, "users/master.html", context)
 
 

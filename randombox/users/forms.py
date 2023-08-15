@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import CustomUser  # CustomUser 모델을 import
-
+from django.contrib.auth.forms import AuthenticationForm
 
 class UserForm(UserCreationForm):
     """
@@ -15,3 +15,11 @@ class UserForm(UserCreationForm):
     class Meta:
         model = CustomUser  # CustomUser 모델로 변경
         fields = ["username", "email", "address"]
+
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': "로그인 정보가 올바르지 않습니다. 다시 시도해주세요.",
+        'inactive': "비활성화된 계정입니다.",
+    }

@@ -21,3 +21,6 @@ class Brand(Product):
 # 남은 매출만 담는 모델 생성(관리자 페이지에서 데이터 쉽게 가져오려고 만듦)
 class Sales(models.Model):
     remain_sales = models.IntegerField(default=0, verbose_name="남은 매출")
+
+    def __str__(self):
+        return f"Sales: {self.remain_sales}"

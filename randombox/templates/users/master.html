@@ -52,9 +52,9 @@
               <h6 class="card-subtitle mb-2 text-body-secondary">
                 <span class="text-blue">{{total_sales|intcomma}}</span>원</h6>
               <h6 class="mb-2 text-body-secondary">
-                {% if total_sales == 0 or remain_sales > min_brand_price %}
-                  <span class="text-red">브랜드 상품 출고 대기</span>
-                {% else %}Balance:
+                {% if total_sales == 0 or remain_sales < min_brand_price %}Raffle Balance: 
+                  <span class="text-red">+{{raffle_sales|intcomma}}</span>
+                {% else %}현재 남은 매출(확인용):
                   <span class="text-blue">{{remain_sales|intcomma}}</span>원
                 {% endif %}
               </h6>

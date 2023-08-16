@@ -91,7 +91,7 @@ def paid_amount(request):
             print("당첨 후 남은 매출: ", int_cc_remain,"|",cc_obj.remain_sales)
 
             # 로그인 유저가 당첨된 일반상품이 구매 수량보다 적은 경우를 필터링
-            if user.p_amount > 0 and user.general.count() < buy_amount:
+            if user.p_amount > 0 and user.general.count() < user.p_amount // 20000 :
                 print("당첨 유저 확인: ", user)
 
                 # 브랜드.가격 필드값이 브랜드 최저가와 일치하면:
@@ -220,7 +220,7 @@ def process_remaining_sales(int_cc_remain, cc_obj, cc, user, buy_amount):
             print("당첨 후 남은 매출: ", int_cc_remain,"|",cc_obj.remain_sales)
 
             # 로그인 유저가 당첨된 일반상품이 구매 수량보다 적은 경우를 필터링
-            if user.p_amount > 0 and user.general.count() < buy_amount:
+            if user.p_amount > 0 and user.general.count() < user.p_amount // 20000 :
                 print("당첨 유저 확인: ", user)
 
                 # 브랜드.가격 필드값이 브랜드 최저가와 일치하면:

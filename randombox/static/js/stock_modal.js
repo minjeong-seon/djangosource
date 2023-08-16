@@ -129,43 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 
-  // // =====================================================================
-  // /** 재고 수량 입력: 상하버튼 활용 ver
-  //  *  클릭 상태 유지하면 계속 값 상승/하락
-  //  */
-  // const quantityInput = document.getElementById("quantity");
-  // const upButton = document.querySelector(".up");
-  // const downButton = document.querySelector(".down");
-  // var isPressed = false;
-  
-  // upButton.addEventListener("mouseup", ()=> {
-  //   isPressed = false;
-  // });
-
-  // upButton.addEventListener("mousedown", ()=>{
-  //   isPressed = true;
-  //   doInterval("1");
-  // });
-
-  // downButton.addEventListener("mouseup", ()=>{
-  //   isPressed = false;
-  // });
-
-  // downButton.addEventListener("mousedown", ()=> {
-  //   isPressed = true;
-  //   doInterval("-1");
-  // });
-
-  // function doInterval(action) {
-  //   if (isPressed) {
-  //     quantityInput.value = parseInt(quantityInput.value) + parseInt(action);
-
-  //     setTimeout(function () {
-  //       doInterval(action);
-  //     }, 200);
-  //   }
-  // }
-
   // =====================================================================
   /** 재고 수량 관리하기
    *  사용자가 입력한 값으로 재고수량 업데이트 - 함수 실행 결과(Json) 받아서 화면에 뿌림
@@ -304,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="input-group" id="custom_input">
                   <input type="hidden" id="csrf-token" name="csrfmiddlewaretoken" value="${csrfToken}">
                   <input type="number" name="quantity" id="quantity-${item.pk}" class="form-control" value="" min="0" step="1">
-                  <button class="qty-ctrl btn btn-outline-warning ms-1" data-id="${item.pk}">확인</button>
+                  <button class="qty-ctrl btn btn-outline-warning ms-1" data-id="${item.pk}">수정</button>
                 </div>
               </div>
             </td>

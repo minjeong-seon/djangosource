@@ -43,10 +43,10 @@ def master(request):
 
     # 브랜드 상품 당첨까지 남은 금액(`+얼마`로 표현하기)
     remain = Sales.objects.first().remain_sales
+    
     raffle_sales = cc["min_brand_price"] - remain
 
-    if raffle_sales < 0:
-        raffle_sales = +raffle_sales
+
     print("당첨 진행까지 남은 매출: ", raffle_sales)
 
     context = {

@@ -54,8 +54,6 @@
               <h6 class="mb-2 text-body-secondary">
                 {% if total_sales == 0 or raffle_sales > 0 %}Raffle Balance: 
                   <span class="text-red">+{{raffle_sales|intcomma}}</span>
-                {% else %}현재 남은 매출(확인용):
-                  <span class="text-blue">{{remain_sales|intcomma}}</span>원
                 {% endif %}
               </h6>
               <div class="mt-auto">

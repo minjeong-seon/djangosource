@@ -170,6 +170,7 @@ def customer(request):
     cc = common_data(user)
 
     page = request.GET.get("page", 1)
+    print("페이지번호 타입", type(page), page)
     keyword = request.GET.get("keyword", "")
     sort = request.GET.get("sort", "customer_no")
 

@@ -55,7 +55,7 @@
           <td class="border text-center">
             {% if user.brand_id %}
             <a class="drawer text-decoration-none text-dark text-center fw-bolder" data-bs-toggle="collapse1" href="#collapseExample{{user.id}}" role="button" aria-expanded="false" aria-controls="collapseExample{{user.id}}">🏷️ 브랜드 상품 당첨</a>
-            {% else %}
+            {% elif user.general.count > 0 %}
               <a class="drawer text-decoration-none text-dark text-center fw-bolder" data-bs-toggle="collapse1" href="#collapseExample{{user.id}}" role="button" aria-expanded="false" aria-controls="collapseExample{{user.id}}">일반 상품 당첨</a>
             {% endif %}
           </td>
@@ -155,7 +155,7 @@
         {% for page in users.paginator.page_range %}
           {% if page >= users.number|add:-5 and page <= users.number|add:5%}
             <li class="page-item  {% if page == users.number %}active{% endif %}">
-              <a class="page-link" href="?page={{page}}">{{page}}</a>
+              <a class="page-link" href="{{page}}">{{page}}</a>
             </li>
           {% endif %}
         {% endfor %}
